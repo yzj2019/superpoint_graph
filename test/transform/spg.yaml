@@ -1,0 +1,51 @@
+# point features used for the partition
+partition_hf:
+  - 'rgb'
+  - 'linearity'
+  - 'planarity'
+  - 'scattering'
+  - 'verticality'
+  - 'elevation'
+
+# Parameters declared here to facilitate tuning configs without copying
+# all the pre_transforms
+
+# Based on SPG: https://arxiv.org/pdf/1711.09869.pdf
+Knn:
+  k: 45
+  r_max: 2
+
+GroundElevation:
+  threshold: 1.5
+  scale: 4.0
+
+PointFeatures:
+  k_min: 1
+  k_step: -1
+  k_min_search: 25
+  overwrite: False
+  keys: ${partition_hf}
+
+pcp_k_adjacency: 10
+AdjacencyGraph:
+  k: ${pcp_k_adjacency}
+  w: 1
+
+ConnectIsolated:
+  k: 1
+
+AddKeysTo:
+  keys: ${partition_hf}
+  to: 'x'
+  strict: True
+  delete_after: False
+
+CutPursuitPartition:
+  regularization: [0.01, 0.1, 0.5]
+  spatial_weight: [1e-1, 1e-1, 1e-1]
+  k_adjacency: ${pcp_k_adjacency}
+  cutoff: [10, 10, 10]
+  iterations: 15
+  parallel: True
+  verbose: False
+
